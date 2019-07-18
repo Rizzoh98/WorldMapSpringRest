@@ -20,7 +20,7 @@ public class NationsController {
 	@Autowired
 	INationDao nationDao;
 
-	@RequestMapping("/continent")
+	@RequestMapping("/")
 	public List<String> getIndex(ModelMap model) {
 
 		List<String> continenti = new ArrayList<String>();
