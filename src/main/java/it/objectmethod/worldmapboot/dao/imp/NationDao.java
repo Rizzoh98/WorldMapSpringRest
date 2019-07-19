@@ -14,19 +14,17 @@ import it.objectmethod.worldmapboot.domain.mapper.NationMapper;
 
 @Service
 public class NationDao extends NamedParameterJdbcDaoSupport implements INationDao {
-	
+
 	@Autowired
-	public NationDao(DataSource dataSource)
-	{
+	public NationDao(DataSource dataSource) {
 		super();
 		setDataSource(dataSource);
 	}
 
-
 	@Override
 	public List<Nation> getAllNation(String continent) {
 
-		List<Nation> getallnation = null; 
+		List<Nation> getallnation = null;
 		String sql = "SELECT * FROM country WHERE Continent = ?";
 		getallnation = getJdbcTemplate().query(sql, new Object[] { continent }, new NationMapper());
 

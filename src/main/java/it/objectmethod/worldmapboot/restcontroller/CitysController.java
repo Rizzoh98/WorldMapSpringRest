@@ -3,10 +3,11 @@ package it.objectmethod.worldmapboot.restcontroller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
+import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,7 +17,6 @@ import it.objectmethod.worldmapboot.config.Constants;
 import it.objectmethod.worldmapboot.dao.imp.CityDao;
 import it.objectmethod.worldmapboot.dao.imp.NationDao;
 import it.objectmethod.worldmapboot.domain.City;
-import it.objectmethod.worldmapboot.domain.Nation;
 
 @RestController
 public class CitysController {
@@ -27,19 +27,14 @@ public class CitysController {
 	@Autowired
 	NationDao nationDao;
 
-	@RequestMapping("/citys")
-	public List<City> getIndex(ModelMap model, @RequestParam(value = "countrycode", required = false) String countrycode,
-			@RequestParam(value = "order", required = false) String order, HttpSession session) {
-		List<City> citta = new ArrayList<City>();
+	@RequestMapping("/city/list/")
+	public List<City> getIndex(@RequestParam("countrycode") String countrycode, @RequestParam("order") String order) {
 
-		if (countrycode == null) {
-			countrycode = (String) session.getAttribute("nation");
-		} else {
-			session.setAttribute("nation", countrycode);
-		}
+		List<City> citta = new ArrayList<City>();
 
 		String orderName;
 		String orderPop;
+
 		if (order != null) {
 			switch (order) {
 			case Constants.ORDER_AZ:
@@ -78,60 +73,43 @@ public class CitysController {
 			e.printStackTrace();
 		}
 
-		model.addAttribute("orderName", orderName);
-		model.addAttribute("orderPop", orderPop);
-
-		model.addAttribute("result", citta);
-		//return "Citta";
 		return citta;
 	}
 
-	@GetMapping("/Delete")
-	public String deleteCity(@RequestParam("id") Integer id) {
+	@GetMapping("/city/delete")
+	public ResponseEntity<Integer> deleteCity(@PathParam("id") Integer id) {
 
-		cityDao.deleteCity(id);
-
-		return "forward:/citys";
+		if (id != 0) {
+			cityDao.deleteCity(id);
+			return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
+		} else {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
-	@GetMapping("/LoadEditPage")
-	public String loadEditPage(@RequestParam("id") Integer idCity,
-			@RequestParam(value = "countrycode", required = false) String countrycode, ModelMap map,
-			HttpSession session) {
+	@GetMapping("/city/update/")
+	public ResponseEntity<Integer> updateCity(@PathParam("id") Integer id, @RequestParam("cityName") String cityName) {
 
-		City city = new City();
-		List<Nation> allnation = null;
-
-		if (idCity != 0) {
-			city = cityDao.getCityById(idCity);
+		if (id != 0) {
+			cityDao.updateCity(id, cityName);
+			return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
 		} else {
-			city.setId(0);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
-		try {
-			allnation = nationDao.getAllNations();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		map.addAttribute("result", allnation);
-		map.addAttribute("citta", city);
-		map.addAttribute("countrycode", countrycode);
-		return "EditCity";
 	}
 
-	@GetMapping("/Save")
-	public String saveCity(@RequestParam("id") Integer idCity, @RequestParam("cityname") String cityName,
-			@RequestParam("selectCountry") String countrycode) {
+	@GetMapping("/city/add/")
+	public ResponseEntity<String> addCity(@RequestParam("newCityName") String newCityName,
+			@RequestParam("countrycode") String countrycode) {
 
-		if (idCity != 0) {
-			cityDao.updateCity(idCity, cityName);
-
+		if (countrycode != "") {
+			cityDao.addCity(newCityName, countrycode);
+			return new ResponseEntity<>(countrycode, HttpStatus.ACCEPTED);
 		} else {
-			cityDao.addCity(cityName, countrycode);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
-		return "forward:/citys";
 	}
 
 }

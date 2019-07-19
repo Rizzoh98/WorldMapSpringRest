@@ -3,10 +3,7 @@ package it.objectmethod.worldmapboot.restcontroller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,8 +17,8 @@ public class NationsController {
 	@Autowired
 	INationDao nationDao;
 
-	@RequestMapping("/")
-	public List<String> getIndex(ModelMap model) {
+	@RequestMapping("/continents/list/")
+	public List<String> getIndex() {
 
 		List<String> continenti = new ArrayList<String>();
 
@@ -32,22 +29,13 @@ public class NationsController {
 			e.printStackTrace();
 		}
 
-		model.addAttribute("result", continenti);
-
-		// return "Continenti";
 		return continenti;
 	}
 
-	@RequestMapping("/nation")
-	public List<Nation> getIndex(ModelMap model, @RequestParam(value = "continent", required = false) String continent,
-			HttpSession session) {
-		List<Nation> nazioni = null;
+	@RequestMapping("/nation/list/")
+	public List<Nation> getIndex(@RequestParam("continent") String continent) {
 
-		if (continent == null) {
-			continent = (String) session.getAttribute("continent");
-		} else {
-			session.setAttribute("continent", continent);
-		}
+		List<Nation> nazioni = null;
 
 		try {
 			nazioni = nationDao.getAllNation(continent);
@@ -55,10 +43,8 @@ public class NationsController {
 			e.printStackTrace();
 		}
 
-		model.addAttribute("result", nazioni);
-
-		//return "Nazioni";
 		return nazioni;
+
 	}
 
 }

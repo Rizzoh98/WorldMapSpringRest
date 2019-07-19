@@ -16,14 +16,13 @@ import it.objectmethod.worldmapboot.domain.City;
 
 @Service
 public class CityDao extends NamedParameterJdbcDaoSupport implements ICityDao {
-	
+
 	@Autowired
-	public CityDao(DataSource dataSource)
-	{
+	public CityDao(DataSource dataSource) {
 		super();
 		setDataSource(dataSource);
 	}
-	
+
 	@Override
 	public void deleteCity(int id) {
 
