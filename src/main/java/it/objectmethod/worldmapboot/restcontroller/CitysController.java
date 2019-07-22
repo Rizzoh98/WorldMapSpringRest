@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.objectmethod.worldmapboot.config.Constants;
-import it.objectmethod.worldmapboot.dao.imp.CityDao;
+import it.objectmethod.worldmapboot.dao.ICityDao;
 import it.objectmethod.worldmapboot.dao.imp.NationDao;
 import it.objectmethod.worldmapboot.domain.City;
 
@@ -22,7 +22,7 @@ import it.objectmethod.worldmapboot.domain.City;
 public class CitysController {
 
 	@Autowired
-	CityDao cityDao;
+	ICityDao cityDao;
 
 	@Autowired
 	NationDao nationDao;
